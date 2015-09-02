@@ -1,0 +1,15 @@
+{
+    "name": "pixleindustries/laravel-jsonapi",
+    "description": "Laravel Bridge for neomerx/json-api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Max van der Stam",
+            "email": "max@pixelindustries.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "neomerx/json-api": "^0.5.13"
+    }
+}
