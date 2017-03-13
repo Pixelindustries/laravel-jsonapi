@@ -2,7 +2,12 @@
 
 [![Software License][ico-license]](LICENSE.md)
 
-Basic application elements for JSON-API projects. 
+Basic application elements for JSON-API projects.
+
+Offers means for quickly scaffolding JSON-API compliance for Laravel applications.
+
+This does *NOT* provide the means to set up the API or the means for user authorisation.
+
 
 ## Version Compatibility
 
@@ -19,8 +24,10 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Credits
 
-- [Coen Zimmerman][link-author]
+- [Pixelindustries][link-author]
+- [Coen Zimmerman][link-czim-author]
 - [All Contributors][link-contributors]
+
 
 ## License
 
@@ -29,4 +36,5 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 
 [link-author]: https://github.com/czim
+[link-czim-author]: https://github.com/czim
 [link-contributors]: ../../contributors
