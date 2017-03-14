@@ -12,7 +12,8 @@ class JsonApiSerializer extends FractalJsonApiSerializer
      */
     public function __construct($baseUrl = null)
     {
-        $baseUrl = $baseUrl ?: '/api';
+        $baseUrl = $baseUrl ?: config('jsonapi.base_url', '/api');
+
         parent::__construct($baseUrl);
     }
 
