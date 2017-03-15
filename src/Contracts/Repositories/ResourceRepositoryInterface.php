@@ -1,7 +1,7 @@
 <?php
 namespace Pixelindustries\JsonApi\Contracts\Repositories;
 
-use App\Models\Model;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Pixelindustries\JsonApi\Contracts\Resource\ResourceInterface;
 
