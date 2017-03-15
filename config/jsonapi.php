@@ -58,6 +58,7 @@ return [
         'size' => 25,
     ],
 
+
     /*
     |--------------------------------------------------------------------------
     | Request
@@ -85,6 +86,24 @@ return [
         'sort' => [
             // The token by which the sort strings are separated, if multiple sort attributes are given.
             'separator' => ',',
+        ],
+    ],
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exceptions
+    |--------------------------------------------------------------------------
+    */
+
+    'exceptions' => [
+
+        // Mapping for status code to use for specific exception classes
+        'status' => [
+            \League\OAuth2\Server\Exception\OAuthException::class              => 403,
+            \Illuminate\Database\Eloquent\ModelNotFoundException::class        => 404,
+            \Czim\Filter\Exceptions\FilterDataValidationFailedException::class => 422,
+            \Illuminate\Validation\ValidationException::class                  => 422,
         ],
     ],
 
