@@ -24,7 +24,6 @@
         "phpunit/phpunit": "5.*",
         "mockery/mockery": "0.9.*",
         "scrutinizer/ocular": "~1.1",
-        "league/fractal": "^0.15.0",
         "orchestra/testbench": "3.3.*"
     },
     "autoload": {
