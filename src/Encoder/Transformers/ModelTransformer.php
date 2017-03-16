@@ -104,10 +104,9 @@ class ModelTransformer extends AbstractTransformer
      */
     protected function processRelationships(ResourceInterface $resource)
     {
-        $requested = array_flip($this->encoder->getRequestedIncludes());
-        $default   = array_flip($resource->defaultIncludes());
-
         $data = [];
+
+        $defaultIncludes = $this->getDefaultIncludesIndex($resource);
 
         foreach ($resource->availableIncludes() as $key) {
 
@@ -127,19 +126,13 @@ class ModelTransformer extends AbstractTransformer
 
 
             $data[ $key ] = [
-                static::LINKS_KEY => [
-                    static::LINKS_SELF_KEY => $this->getBaseResourceUrl($resource) . '/relationships/' . $key,
-                ],
+                static::LINKS_KEY => $this->getLinksData($resource, $key, $relatedType)
             ];
 
-            // If the relation is not morph/variable, add the related link
-            if ($relatedType) {
-                $data[ $key ][ static::LINKS_KEY ][ static::LINKS_RELATED_KEY ] = $this->getBaseResourceUrl($resource)
-                    . '/' . $relatedType;
-            }
 
+            // Set data and side-load includes
 
-            $fullyIncluded = array_key_exists($key, $requested) || array_key_exists($key, $default);
+            $fullyIncluded = $this->shouldIncludeFully($resource, $key, $defaultIncludes);
 
             // References (type/id) should be added as data for the relationship if:
             // a. a relationship is included by default or by the client
@@ -169,14 +162,73 @@ class ModelTransformer extends AbstractTransformer
 
                     $data[ $key ][ static::DATA_KEY ] = $this->getRelatedReferenceData($resource, $relationData);
                 }
-
             }
         }
 
         return $data;
     }
 
+    /**
+     * Returns indexed list of default includes, with keys as the includes.
+     *
+     * This allows quick lookup by checking whether an include key exists.
+     *
+     * @param ResourceInterface $resource
+     * @return array
+     */
+    protected function getDefaultIncludesIndex(ResourceInterface $resource)
+    {
+        return array_flip($resource->defaultIncludes());
+    }
 
+    /**
+     * @param ResourceInterface $resource
+     * @param string            $key
+     * @param array|null        $defaults       associative index, keys should be include keys.
+     * @return bool
+     */
+    protected function shouldIncludeFully(ResourceInterface $resource, $key, array $defaults = null)
+    {
+        if (null === $defaults) {
+            $defaults = $this->getDefaultIncludesIndex($resource);
+        }
+
+        if (config('jsonapi.transform.requested-includes-cancel-defaults')) {
+
+            if ($this->encoder->hasRequestedIncludes()) {
+                return $this->encoder->isIncludeRequested($key);
+            }
+
+            return array_key_exists($key, $defaults);
+        }
+
+        return $this->encoder->isIncludeRequested($key) || array_key_exists($key, $defaults);
+    }
+
+    /**
+     * Returns JSON-API links section data.
+     *
+     * @param ResourceInterface $resource
+     * @param string            $key
+     * @param string            $relatedType
+     * @return array
+     */
+    protected function getLinksData(ResourceInterface $resource, $key, $relatedType)
+    {
+        $data = [
+            static::LINKS_KEY => [
+                static::LINKS_SELF_KEY => $this->getBaseResourceUrl($resource) . '/relationships/' . $key,
+            ],
+        ];
+
+        // If the relation is not morph/variable, add the related link
+        if ($relatedType) {
+            $data[ static::LINKS_KEY ][ static::LINKS_RELATED_KEY ] = $this->getBaseResourceUrl($resource)
+                . '/' . $relatedType;
+        }
+
+        return $data;
+    }
 
     /**
      * Returns transformed data for full includes
@@ -207,6 +259,7 @@ class ModelTransformer extends AbstractTransformer
         $related = $resource->getModel()->{$method};
 
         $transformer = $this->encoder->makeTransformer($related);
+        $transformer->setParent($this->parent . '.' . $includeKey);
 
         return [
             static::DATA_KEY => $transformer->transform($related),

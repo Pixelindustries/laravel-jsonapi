@@ -1,7 +1,6 @@
 <?php
 namespace Pixelindustries\JsonApi\Contracts\Encoder;
 
-use Illuminate\Database\Eloquent\Model;
 use Pixelindustries\JsonApi\Exceptions\EncodingException;
 
 interface TransformerInterface
@@ -21,6 +20,14 @@ interface TransformerInterface
      * @return $this
      */
     public function setIsTop($top = true);
+
+    /**
+     * Sets the dot-notation parent chain.
+     *
+     * @param string $parentChain
+     * @return $this
+     */
+    public function setParent($parentChain);
 
     /**
      * Sets whether the collection may contain more than one type of model.

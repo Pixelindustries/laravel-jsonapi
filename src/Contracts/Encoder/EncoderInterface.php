@@ -49,6 +49,7 @@ interface EncoderInterface
      */
     public function removeLink($key);
 
+
     /**
      * Sets requested includes for transformation.
      *
@@ -63,6 +64,23 @@ interface EncoderInterface
      * @return string[]
      */
     public function getRequestedIncludes();
+
+    /**
+     * Returns whether any includes are requested.
+     *
+     * @return bool
+     */
+    public function hasRequestedIncludes();
+
+    /**
+     * Returns whether a dot-notated include is requested.
+     *
+     * This WILL report some.relation to be requested when some.relation.deeper is requested.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function isIncludeRequested($key);
 
     /**
      * Adds data to be included by side-loading.

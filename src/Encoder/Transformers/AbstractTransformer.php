@@ -22,6 +22,15 @@ abstract class AbstractTransformer implements TransformerInterface
     protected $isTop = false;
 
     /**
+     * Parent dot-notation key chain.
+     *
+     * This should correspond to the dot-notation of the includes.
+     *
+     * @var string
+     */
+    protected $parent;
+
+    /**
      * Whether the results in a collection are of variable model type.
      *
      * @var bool
@@ -48,6 +57,19 @@ abstract class AbstractTransformer implements TransformerInterface
     public function setIsTop($top = true)
     {
         $this->isTop = (bool) $top;
+
+        return $this;
+    }
+
+    /**
+     * Sets the dot-notation parent chain.
+     *
+     * @param string $parentChain
+     * @return $this
+     */
+    public function setParent($parentChain)
+    {
+        $this->parent = $parentChain;
 
         return $this;
     }

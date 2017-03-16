@@ -36,12 +36,25 @@ return [
 
     'transform' => [
 
+        // As per JSON-API spec, this will ignore default includes set for resources when
+        // includes are requested by the client.
+        'requested-includes-cancel-defaults' => true,
+
+        // Generating JSON-API type from Eloquent models.
         'type' => [
+
             // The namespace for records (models) to left-trim for creating type:
             // If 'App\Models', then App\Models\Pages\Page gets dasherized as type: pages--page.
             // If null, only the classname of the model will be used.
             // If empty string (''), the full namespace will be used.
             'trim-namespace' => null,
+        ],
+
+        // Fallback mapping transformers to content type.
+        // The TransformerFactory will use this to instantiate transformers based on an is_a() match
+        // on given content, if no standard match was found.
+        'map' => [
+            // \Your\ClassHere::class => \Your\Transformer\ClassHere::class
         ],
     ],
 

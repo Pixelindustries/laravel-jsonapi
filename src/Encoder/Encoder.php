@@ -206,6 +206,35 @@ class Encoder implements EncoderInterface
     }
 
     /**
+     * Returns whether any includes are requested.
+     *
+     * @return bool
+     */
+    public function hasRequestedIncludes()
+    {
+        return (bool) count($this->requestedIncludes);
+    }
+
+    /**
+     * Returns whether a dot-notated include is requested.
+     *
+     * This WILL report some.relation to be requested when some.relation.deeper is requested.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function isIncludeRequested($key)
+    {
+        foreach ($this->requestedIncludes as $include) {
+            if ($include === $key || starts_with($include, $key . '.')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Returns whether any links were collected.
      *
      * @return bool

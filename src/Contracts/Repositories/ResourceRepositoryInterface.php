@@ -9,6 +9,20 @@ interface ResourceRepositoryInterface
 {
 
     /**
+     * Initializes repository, registering resources where possible.
+     */
+    public function initialize();
+
+    /**
+     * Registers a resource instance for a given model or model class.
+     *
+     * @param Model|string      $model
+     * @param ResourceInterface $resource
+     * @return $this
+     */
+    public function register($model, ResourceInterface $resource);
+
+    /**
      * Returns all registered resources.
      *
      * @return Collection|ResourceInterface[]
