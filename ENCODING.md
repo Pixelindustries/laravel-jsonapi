@@ -9,6 +9,39 @@ You must set up `Resource` classes that describe how the encoder should handle t
 see below for more information.
 
 
+## Creating encoded responses
+
+To manually create a JSON-API response, you can use the following helper methods or facades.
+
+```php
+<?php
+    // Instantiate the encoder
+    $encoder = app(\Pixelindustries\JsonApi\Contracts\Encoder\EncoderInterface::class);
+
+    return \JsonApiReponse::make( $encoder->encode($data) );
+
+    // This is equivalent to the above
+    return jsonapi_response( $encoder->encode($data) );
+```
+
+### Includes
+
+Includes may be set on an encoder instance ...
+
+```php
+<?php
+    $encoder->setRequestedIncludes([ 'some', 'inclu.des' ]);
+    $encoder->encode($resource);
+```
+
+... or passed in to the encoder as a parameter of the `encode()` method:
+ 
+```php
+<?php
+    $encoder->encode($resource, [ 'some', 'inclu.des' ]);
+```
+
+
 ## Encoding Eloquent Models as JSON-API Resources
 
 When an `Eloquent` model (or Eloquent `Collection`) is encoded, it is parsed as a JSON-API resource,
@@ -75,8 +108,22 @@ adjust the `render` method on your `App\Exceptions\Handler`:
 
 ## Encoding Custom Errors
 
-... TO DO: custom errors ...
+For custom errors, you can create an instance of `Pixelindustries\JsonApi\Support\Error\ErrorData` (or another class
+that implements `Pixelindustries\JsonApi\Contracts\Support\Error\ErrorDataInterface`) and feed it to the encoder:
 
+```php
+<?php
+    /** @var \Pixelindustries\JsonApi\Contracts\Encoder\EncoderInterface::class $encoder */
+    $encoder = app(\Pixelindustries\JsonApi\Contracts\Encoder\EncoderInterface::class);    
+    
+    $error = new \Pixelindustries\JsonApi\Support\Error\ErrorData([
+        'code'   => '13',
+        'title'  => 'Whoops, something went wrong!',
+        'detail' => 'The thingamagig got tangled in the gobbledygooker',
+    ]);
+    
+    $encodedError = $encoder->encode($error);
+```
 
 
 ## Custom Encoding & Transformation
