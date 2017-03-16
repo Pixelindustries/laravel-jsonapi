@@ -33,6 +33,24 @@ interface EncoderInterface
     public function getBaseUrl();
 
     /**
+     * Returns the base URI for the top resource, if any is set.
+     *
+     * @return null|string
+     */
+    public function getTopResourceUrl();
+
+    /**
+     * Sets the base top resource URI.
+     *
+     * This will be reset after encoding.
+     *
+     * @param string $url
+     * @param bool   $absolute
+     * @return $this
+     */
+    public function setTopResourceUrl($url, $absolute = false);
+
+    /**
      * Sets a top-level link.
      *
      * @param string $key

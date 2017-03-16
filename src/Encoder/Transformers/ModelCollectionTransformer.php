@@ -4,6 +4,7 @@ namespace Pixelindustries\JsonApi\Encoder\Transformers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Pixelindustries\JsonApi\Contracts\Resource\ResourceInterface;
+use Pixelindustries\JsonApi\Enums\Key;
 use UnexpectedValueException;
 
 class ModelCollectionTransformer extends ModelTransformer
@@ -42,11 +43,12 @@ class ModelCollectionTransformer extends ModelTransformer
         $data = [];
 
         foreach ($models as $model) {
-
-            $data[] = parent::transform($model);
+            $data[] = parent::transform($model)[ Key::DATA ];
         }
 
-        return $data;
+        return [
+            Key::DATA => $data,
+        ];
     }
 
     /**

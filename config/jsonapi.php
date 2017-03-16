@@ -1,5 +1,8 @@
 <?php
 
+use Pixelindustries\JsonApi\Contracts\Support\Error\ErrorDataInterface;
+use Pixelindustries\JsonApi\Encoder\Transformers\ErrorDataTransformer;
+
 return [
 
     // The base relative API url to use for JSON-API links.
@@ -40,6 +43,24 @@ return [
         // includes are requested by the client.
         'requested-includes-cancel-defaults' => true,
 
+        // If this is enabled, default includes defined in resources will only be applied
+        // at the top level. Any nested resources that are included will NOT have their
+        // default includes processed unless specifically requested.
+        // todo: implement
+        'top-level-default-includes-only' => true,
+
+        // If this is enabled, the encoder will automatically attempt to determine the
+        // URL to be used for links relative to the top level resource.
+        'auto-determine-top-resource-url' => true,
+
+        'links' => [
+            // The segment to add for relationship links:
+            // as in
+            //      <base URL>/<resource>/<relationships>/<include key>
+            //      http://api.somewhere.com/post/relationships/comments
+            'relationships-segment' => 'relationships',
+        ],
+
         // Generating JSON-API type from Eloquent models.
         'type' => [
 
@@ -54,6 +75,7 @@ return [
         // The TransformerFactory will use this to instantiate transformers based on an is_a() match
         // on given content, if no standard match was found.
         'map' => [
+            ErrorDataInterface::class => ErrorDataTransformer::class,
             // \Your\ClassHere::class => \Your\Transformer\ClassHere::class
         ],
     ],

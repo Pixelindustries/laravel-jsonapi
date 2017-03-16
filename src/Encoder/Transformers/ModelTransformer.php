@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Pixelindustries\JsonApi\Contracts\Resource\ResourceInterface;
+use Pixelindustries\JsonApi\Enums\Key;
 use Pixelindustries\JsonApi\Exceptions\EncodingException;
 use Pixelindustries\JsonApi\Support\Resource\RelationData;
 use RuntimeException;
@@ -12,13 +13,6 @@ use UnexpectedValueException;
 
 class ModelTransformer extends AbstractTransformer
 {
-    const ATTRIBUTES_KEY    = 'attributes';
-    const DATA_KEY          = 'data';
-    const LINKS_KEY         = 'links';
-    const LINKS_SELF_KEY    = 'self';
-    const LINKS_RELATED_KEY = 'related';
-    const RELATIONSHIPS_KEY = 'relationships';
-
 
     /**
      * Transforms given data.
@@ -40,21 +34,23 @@ class ModelTransformer extends AbstractTransformer
         $resource->setModel($model);
 
         $data = [
-            'id'                      => $resource->id(),
-            'type'                    => $resource->type(),
-            static::ATTRIBUTES_KEY    => $this->serializeAttributes($resource),
-            static::RELATIONSHIPS_KEY => $this->processRelationships($resource),
+            'id'               => $resource->id(),
+            'type'             => $resource->type(),
+            Key::ATTRIBUTES    => $this->serializeAttributes($resource),
+            Key::RELATIONSHIPS => $this->processRelationships($resource),
         ];
 
-        if ( ! count($data[static::ATTRIBUTES_KEY])) {
-            unset($data[static::ATTRIBUTES_KEY]);
+        if ( ! count($data[ Key::ATTRIBUTES ])) {
+            unset($data[ Key::ATTRIBUTES ]);
         }
 
-        if ( ! count($data[static::RELATIONSHIPS_KEY])) {
-            unset($data[static::RELATIONSHIPS_KEY]);
+        if ( ! count($data[ Key::RELATIONSHIPS ])) {
+            unset($data[ Key::RELATIONSHIPS ]);
         }
 
-        return $data;
+        return [
+            Key::DATA => $data,
+        ];
     }
 
     /**
@@ -126,7 +122,7 @@ class ModelTransformer extends AbstractTransformer
 
 
             $data[ $key ] = [
-                static::LINKS_KEY => $this->getLinksData($resource, $key, $relatedType)
+                Key::LINKS => $this->getLinksData($resource, $key, $relatedType)
             ];
 
 
@@ -153,14 +149,14 @@ class ModelTransformer extends AbstractTransformer
                     $related = $this->getRelatedFullData($resource, $relationData);
                     $this->addRelatedDataToEncoder($related, $relationData->singular);
 
-                    $data[ $key ][ static::DATA_KEY ] = $this->getRelatedReferencesFromRelatedData(
+                    $data[ $key ][ Key::DATA ] = $this->getRelatedReferencesFromRelatedData(
                         $related,
                         $relationData->singular
                     );
 
                 } else {
 
-                    $data[ $key ][ static::DATA_KEY ] = $this->getRelatedReferenceData($resource, $relationData);
+                    $data[ $key ][ Key::DATA ] = $this->getRelatedReferenceData($resource, $relationData);
                 }
             }
         }
@@ -189,17 +185,19 @@ class ModelTransformer extends AbstractTransformer
      */
     protected function shouldIncludeFully(ResourceInterface $resource, $key, array $defaults = null)
     {
-        if (null === $defaults) {
-            $defaults = $this->getDefaultIncludesIndex($resource);
+        // Only consider default includes if we're at top level or allowing nested defaults.
+        // Also ignore the defaults if we have configured requested defaults to cancel them out,
+        // and they are set.
+        if (    ! $this->isTop && $this->shouldAllowTopLevelIncludesOnly()
+            ||  $this->encoder->hasRequestedIncludes() && $this->shouldIgnoreDefaultIncludesWhenRequestedSet()
+        ) {
+            return $this->encoder->isIncludeRequested($key);
         }
 
-        if (config('jsonapi.transform.requested-includes-cancel-defaults')) {
+        // Otherwise, check whether the include is requested or default
 
-            if ($this->encoder->hasRequestedIncludes()) {
-                return $this->encoder->isIncludeRequested($key);
-            }
-
-            return array_key_exists($key, $defaults);
+        if (null === $defaults) {
+            $defaults = $this->getDefaultIncludesIndex($resource);
         }
 
         return $this->encoder->isIncludeRequested($key) || array_key_exists($key, $defaults);
@@ -216,15 +214,14 @@ class ModelTransformer extends AbstractTransformer
     protected function getLinksData(ResourceInterface $resource, $key, $relatedType)
     {
         $data = [
-            static::LINKS_KEY => [
-                static::LINKS_SELF_KEY => $this->getBaseResourceUrl($resource) . '/relationships/' . $key,
-            ],
+            Key::LINK_SELF => $this->getBaseResourceUrl($resource) . '/'
+                            . $this->getRelationshipsSegment()
+                            . '/' . $key,
         ];
 
         // If the relation is not morph/variable, add the related link
         if ($relatedType) {
-            $data[ static::LINKS_KEY ][ static::LINKS_RELATED_KEY ] = $this->getBaseResourceUrl($resource)
-                . '/' . $relatedType;
+            $data[ KEY::LINK_RELATED ] = $this->getBaseResourceUrl($resource) . '/' . $relatedType;
         }
 
         return $data;
@@ -261,9 +258,7 @@ class ModelTransformer extends AbstractTransformer
         $transformer = $this->encoder->makeTransformer($related);
         $transformer->setParent($this->parent . '.' . $includeKey);
 
-        return [
-            static::DATA_KEY => $transformer->transform($related),
-        ];
+        return $transformer->transform($related);
     }
 
     /**
@@ -297,6 +292,10 @@ class ModelTransformer extends AbstractTransformer
             $ids = $resource->includeRelation($includeKey)->pluck($keyName)->toArray();
         }
 
+        if ($relation->singular && count($ids)) {
+            return [ 'type' => $relatedResource->type(), 'id' => head($ids) ];
+        }
+
         return array_map(
             function ($id) use ($relatedResource) {
                 return [ 'type' => $relatedResource->type(), 'id' => $id ];
@@ -318,9 +317,9 @@ class ModelTransformer extends AbstractTransformer
         }
 
         if ($singular) {
-            $data = [ array_get($data, static::DATA_KEY, []) ];
+            $data = [ array_get($data, Key::DATA, []) ];
         } else {
-            $data = array_get($data, static::DATA_KEY, []);
+            $data = array_get($data, Key::DATA, []);
         }
 
         foreach ($data as $related) {
@@ -338,7 +337,7 @@ class ModelTransformer extends AbstractTransformer
      */
     protected function getRelatedReferencesFromRelatedData(array $data, $singular = false)
     {
-        $data = array_get($data, static::DATA_KEY, []);
+        $data = array_get($data, Key::DATA, []);
 
         if ($singular) {
             return [
@@ -406,6 +405,30 @@ class ModelTransformer extends AbstractTransformer
     protected function isVariableRelation(Relation $relation)
     {
         return $relation instanceof Relations\MorphTo;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function shouldAllowTopLevelIncludesOnly()
+    {
+        return (bool) config('jsonapi.transform.top-level-default-includes-only');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function shouldIgnoreDefaultIncludesWhenRequestedSet()
+    {
+        return (bool) config('jsonapi.transform.requested-includes-cancel-defaults');
+    }
+
+    /**
+     * @return string
+     */
+    protected function getRelationshipsSegment()
+    {
+        return config('jsonapi.transform.links.relationships-segment', 'relationships');
     }
 
 }

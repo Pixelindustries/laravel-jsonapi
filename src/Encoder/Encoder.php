@@ -3,6 +3,7 @@ namespace Pixelindustries\JsonApi\Encoder;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Pixelindustries\JsonApi\Enums\Key;
 use Pixelindustries\JsonApi\Contracts\Encoder\EncoderInterface;
 use Pixelindustries\JsonApi\Contracts\Encoder\TransformerFactoryInterface;
 use Pixelindustries\JsonApi\Contracts\Encoder\TransformerInterface;
@@ -11,10 +12,6 @@ use Pixelindustries\JsonApi\Contracts\Resource\ResourceInterface;
 
 class Encoder implements EncoderInterface
 {
-    const DATA_KEY     = 'data';
-    const LINKS_KEY    = 'links';
-    const INCLUDED_KEY = 'included';
-
 
     /**
      * Sideloaded included data.
@@ -47,6 +44,23 @@ class Encoder implements EncoderInterface
      */
     protected $resourceRepository;
 
+    /**
+     * The base URL for the the top resource.
+     *
+     * This is used for building links relative to the top level,
+     * such as for paginated results.
+     *
+     * @var string|null
+     */
+    protected $topResourceUrl;
+
+    /**
+     * Whether the set top resource URL is absolute.
+     *
+     * @var bool
+     */
+    protected $topResourceAbsolute = false;
+
 
     /**
      * @param TransformerFactoryInterface $transformerFactory
@@ -72,32 +86,54 @@ class Encoder implements EncoderInterface
      */
     public function encode($data)
     {
-        $encoded = [];
+        $this->beforeEncode();
 
         // First, perform the transformation, which should also update the encoder
         // with included data, links, meta data, etc.
-        $encoded[ static::DATA_KEY ] = $this->transform($data);
-
+        $encoded = $this->transform($data);
 
         // Serialize collected data and decorate the encoded data with it.
         if ($this->hasLinks()) {
-            $encoded[ static::LINKS_KEY ] = $this->serializeLinks();
+            $encoded[ Key::LINKS ] = $this->serializeLinks();
         }
 
-
         // Make sure top resource is not in the included data
-        $id   = array_get($encoded[ static::DATA_KEY ], 'id');
-        $type = array_get($encoded[ static::DATA_KEY ], 'type');
+        if (array_key_exists(Key::DATA, $encoded)) {
+            $id   = array_get($encoded[ Key::DATA ], 'id');
+            $type = array_get($encoded[ Key::DATA ], 'type');
 
-        if (null !== $type && null !== $id) {
-            $this->removeFromIncludedDataByTypeAndId($type, $id);
+            if (null !== $type && null !== $id) {
+                $this->removeFromIncludedDataByTypeAndId($type, $id);
+            }
         }
 
         if ($this->hasIncludedData()) {
-            $encoded[ static::INCLUDED_KEY ] = $this->serializeIncludedData();
+            $encoded[ Key::INCLUDED ] = $this->serializeIncludedData();
         }
 
+        $this->afterEncode();
+
         return $encoded;
+    }
+
+    /**
+     * Prepares the encoder for the next encode.
+     */
+    protected function beforeEncode()
+    {
+        if (null === $this->topResourceUrl && config('jsonapi.transform.auto-determine-top-resource-url')) {
+            $this->topResourceUrl      = url()->current();
+            $this->topResourceAbsolute = true;
+        }
+    }
+
+    /**
+     * Resets encoder state, ready for next encode.
+     */
+    protected function afterEncode()
+    {
+        $this->topResourceUrl      = null;
+        $this->topResourceAbsolute = false;
     }
 
     /**
@@ -148,6 +184,37 @@ class Encoder implements EncoderInterface
     public function getBaseUrl()
     {
         return rtrim(config('jsonapi.base_url'), '/');
+    }
+
+    /**
+     * Returns the base URI for the top resource, if any is set.
+     *
+     * @return null|string
+     */
+    public function getTopResourceUrl()
+    {
+        if (null === $this->topResourceUrl || $this->topResourceAbsolute) {
+            return $this->topResourceUrl;
+        }
+
+        return $this->getBaseUrl() . '/' . ltrim($this->getTopResourceUrl(), '/');
+    }
+
+    /**
+     * Sets the base top resource URI.
+     *
+     * This will be reset after encoding.
+     *
+     * @param string $url
+     * @param bool   $absolute
+     * @return $this
+     */
+    public function setTopResourceUrl($url, $absolute = false)
+    {
+        $this->topResourceUrl      = $url;
+        $this->topResourceAbsolute = (bool) $absolute;
+
+        return $this;
     }
 
     /**
@@ -251,7 +318,11 @@ class Encoder implements EncoderInterface
      */
     protected function serializeLinks()
     {
-        return $this->links->toArray();
+        $links = $this->links->toArray();
+
+        ksort($links);
+
+        return $links;
     }
 
 

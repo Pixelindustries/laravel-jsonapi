@@ -3,8 +3,10 @@ namespace Pixelindustries\JsonApi\Encoder\Transformers;
 
 use Exception;
 use InvalidArgumentException;
+use Pixelindustries\JsonApi\Contracts\Support\Error\ErrorDataInterface;
+use Pixelindustries\JsonApi\Support\Error\ErrorData;
 
-class ExceptionTransformer extends AbstractTransformer
+class ExceptionTransformer extends ErrorDataTransformer
 {
 
     /**
@@ -19,14 +21,27 @@ class ExceptionTransformer extends AbstractTransformer
             throw new InvalidArgumentException("ExceptionTransformer expects Exception instance");
         }
 
-        return [
+        $data = $this->convertExceptionToErrorData($exception);
+
+        return parent::transform($data);
+    }
+
+
+    /**
+     * Converts exception instance to ErrorDataInterface instance
+     *
+     * @param Exception $exception
+     * @return ErrorDataInterface
+     */
+    protected function convertExceptionToErrorData(Exception $exception)
+    {
+        return new ErrorData([
             'status' => (string) $this->getStatusCode($exception),
             'code'   => (string) $exception->getCode(),
             'title'  => $this->getTitle($exception),
             'detail' => $exception->getMessage(),
-        ];
+        ]);
     }
-
 
     /**
      * @param Exception $exception

@@ -69,7 +69,6 @@ class ResourceRepository implements ResourceRepositoryInterface
 
         $this->generateClassMap();
 
-
         $this->initialized = true;
     }
 

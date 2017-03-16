@@ -2,7 +2,6 @@
 namespace Pixelindustries\JsonApi\Encoder\Factories;
 
 use Exception;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection as ModelCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\AbstractPaginator;
@@ -42,9 +41,6 @@ class TransformerFactory implements TransformerFactoryInterface
         if ($data instanceof ModelCollection) {
             return Transformers\ModelCollectionTransformer::class;
         }
-
-        // todo
-        // paginated results, lengthawarepaginator
 
         if ($data instanceof Exception) {
             return Transformers\ExceptionTransformer::class;

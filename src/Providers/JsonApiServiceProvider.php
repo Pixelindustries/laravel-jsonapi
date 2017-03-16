@@ -10,7 +10,7 @@ use Pixelindustries\JsonApi\Contracts\Support\Request\RequestParserInterface;
 use Pixelindustries\JsonApi\Contracts\Support\Type\TypeMakerInterface;
 use Pixelindustries\JsonApi\Encoder\Encoder;
 use Pixelindustries\JsonApi\Encoder\Factories\TransformerFactory;
-use Pixelindustries\JsonApi\Facades\JsonApiRequestFacade;
+use Pixelindustries\JsonApi\Facades;
 use Pixelindustries\JsonApi\Repositories\ResourceCollector;
 use Pixelindustries\JsonApi\Repositories\ResourceRepository;
 use Pixelindustries\JsonApi\Support\Request\RequestParser;
@@ -65,7 +65,8 @@ class JsonApiServiceProvider extends ServiceProvider
     {
         $loader = \Illuminate\Foundation\AliasLoader::getInstance();
 
-        $loader->alias('JsonApiRequest', JsonApiRequestFacade::class);
+        $loader->alias('JsonApiRequest', Facades\JsonApiRequestFacade::class);
+        $loader->alias('JsonApiEncoder', Facades\JsonApiEncoderFacade::class);
 
         return $this;
     }
