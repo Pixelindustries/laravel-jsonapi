@@ -46,7 +46,6 @@ return [
         // If this is enabled, default includes defined in resources will only be applied
         // at the top level. Any nested resources that are included will NOT have their
         // default includes processed unless specifically requested.
-        // todo: implement
         'top-level-default-includes-only' => true,
 
         // If this is enabled, the encoder will automatically attempt to determine the
