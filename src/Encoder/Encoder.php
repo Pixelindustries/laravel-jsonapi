@@ -81,11 +81,16 @@ class Encoder implements EncoderInterface
     /**
      * Encodes given data as JSON-API encoded data array.
      *
-     * @param mixed $data
+     * @param mixed      $data
+     * @param array|null $includes
      * @return array
      */
-    public function encode($data)
+    public function encode($data, array $includes = null)
     {
+        if (null !== $includes) {
+            $this->setRequestedIncludes($includes);
+        }
+
         $this->beforeEncode();
 
         // First, perform the transformation, which should also update the encoder

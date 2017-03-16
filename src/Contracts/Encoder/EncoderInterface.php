@@ -10,10 +10,11 @@ interface EncoderInterface
     /**
      * Encodes given data as JSON-API encoded data array.
      *
-     * @param mixed $data
+     * @param mixed      $data
+     * @param array|null $includes      requested includes, if not null
      * @return array
      */
-    public function encode($data);
+    public function encode($data, array $includes = null);
 
     /**
      * Returns transformer for given data in this context.
