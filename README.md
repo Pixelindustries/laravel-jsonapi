@@ -38,6 +38,45 @@ php artisan vendor:publish
 ```
 
 
+### Exceptions
+
+In your `App\Exceptions\Handler`, change the `render()` method like so:
+
+```php
+<?php
+
+    public function render($request, Exception $exception)
+    {
+        if (is_jsonapi_request() || $request->wantsJson()) {
+            return jsonapi_error($exception);
+        }
+        
+        // ...
+```
+
+This will render exceptions thrown for all JSON-API (and JSON) requests as JSON-API error responses.
+
+
+### Middleware
+
+To enforce correct headers, add the `Pixelindustries\JsonApi\Http|Middleware\JsonApiHeaders` middleware
+to the middleware group or relevant routes. You can do this by adding it to your `App\Http\Kernel` class:
+ 
+```php
+<?php
+    protected $middlewareGroups = [
+        'api' => [
+            // ... 
+            \Pixelindustries\JsonApi\Http\Middleware\RequireJsonApiHeader::class,
+        ],
+    ];
+```
+
+Note that this *will* block access to any consumers of your API that do not conform their HTTP header use
+to the JSON-API standard.
+ 
+
+
 ## Documentation
 
 ### Request Data

@@ -18,9 +18,7 @@ To manually create a JSON-API response, you can use the following helper methods
     // Instantiate the encoder
     $encoder = app(\Pixelindustries\JsonApi\Contracts\Encoder\EncoderInterface::class);
 
-    return \JsonApiReponse::make( $encoder->encode($data) );
-
-    // This is equivalent to the above
+    // Cast it as a JSON-API response
     return jsonapi_response( $encoder->encode($data) );
 ```
 
@@ -104,6 +102,8 @@ using the exception code, message, class name and status code where available.
 
 To automatically let Laravel respond with JSON-API encoded error messages when exceptions are caught,
 adjust the `render` method on your `App\Exceptions\Handler`:
+
+You can use the global `jsonapi_error($exception)` helper method to quickly make a JSON-API response.
 
 
 ## Encoding Custom Errors
