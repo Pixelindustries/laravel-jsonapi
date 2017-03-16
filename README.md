@@ -79,11 +79,37 @@ You can ofcourse also instantiate the request parser yourself to access these me
     $id = $jsonapi->getFilterValue('id');
 ```
 
-### Transformation
 
-This package uses and extends [Fractal](https://github.com/thephpleague/fractal) for transforming data as output.
+### Encoding
+
+This package offers an encoder to generate valid JSON-API output for variable input content.
 
 With some minor setup, it is possible to generate JSON output according to JSON-API specs for Eloquent models and errors.
+
+`Eloquent` models, single, collected or paginated, will be serialized as JSON-API resources.
+ 
+[More information on encoding](ENCODING.md) and configuring resources.
+
+
+#### Custom Encoding & Transformation
+
+To use your own transformers for specific class FQNs for the content to be encoded, map them in the `jsonapi.transform.map`
+configuration key:
+
+```php
+<?php
+    'map' => [
+        \Your\ContentClassFqn\Here::class => \Your\TransformerClassFqn\Here::class,        
+    ],
+```
+
+This mapping will return the first-matched for content using `is_a()` checks.
+More specific matches should be higher in the list. 
+
+
+As a last resort, you can always extend and/or rebind the `Pixelindustries\JsonApi\Encoder\Factories\TransformerFactory` 
+to provide your own transformers based on given content type.
+
 
 
 ## Contributing
