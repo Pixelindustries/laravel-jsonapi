@@ -68,6 +68,8 @@ Resources may describe:
 
 ### Automatic Collection of Resources
 
+Note: this is a W.I.P., please use manual registration for now.
+
 ... TO DO: describe resource collector, namespace & config options ...
 
 
