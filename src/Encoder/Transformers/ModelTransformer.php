@@ -38,6 +38,7 @@ class ModelTransformer extends AbstractTransformer
             'type'             => $resource->type(),
             Key::ATTRIBUTES    => $this->serializeAttributes($resource),
             Key::RELATIONSHIPS => $this->processRelationships($resource),
+            Key::META          => $this->serializeMetaData($resource),
         ];
 
         if ( ! count($data[ Key::ATTRIBUTES ])) {
@@ -46,6 +47,10 @@ class ModelTransformer extends AbstractTransformer
 
         if ( ! count($data[ Key::RELATIONSHIPS ])) {
             unset($data[ Key::RELATIONSHIPS ]);
+        }
+
+        if ( ! count($data[ Key::META ])) {
+            unset($data[ Key::META ]);
         }
 
         return [
@@ -73,6 +78,17 @@ class ModelTransformer extends AbstractTransformer
     protected function getBaseResourceUrl(ResourceInterface $resource)
     {
         return $this->encoder->getBaseUrl() . '/' . $resource->type();
+    }
+
+    /**
+     * Returns serialized meta section for a given resource.
+     *
+     * @param ResourceInterface $resource
+     * @return array|null
+     */
+    protected function serializeMetaData(ResourceInterface $resource)
+    {
+        return $resource->getMeta();
     }
 
     /**

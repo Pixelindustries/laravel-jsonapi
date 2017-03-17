@@ -139,4 +139,11 @@ interface ResourceInterface
      */
     public function defaultSortAttributes();
 
+    /**
+     * Returns optional meta section.
+     *
+     * @return array|null   ignored if null
+     */
+    public function getMeta();
+
 }

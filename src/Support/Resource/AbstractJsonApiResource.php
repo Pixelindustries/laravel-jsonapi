@@ -320,6 +320,16 @@ class AbstractJsonApiResource implements ResourceInterface
     }
 
     /**
+     * Returns optional meta section.
+     *
+     * @return array|null   ignored if null
+     */
+    public function getMeta()
+    {
+        return null;
+    }
+
+    /**
      * @return TypeMakerInterface
      */
     protected function getTypeMaker()
