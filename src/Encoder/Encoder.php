@@ -28,6 +28,13 @@ class Encoder implements EncoderInterface
     protected $links;
 
     /**
+     * Top level meta object.
+     *
+     * @var array
+     */
+    protected $meta;
+
+    /**
      * The includes that were marked as requested by the client.
      *
      * @var string[]
@@ -245,6 +252,64 @@ class Encoder implements EncoderInterface
     public function removeLink($key)
     {
         $this->links->forget($key);
+
+        return $this;
+    }
+
+    /**
+     * Returns currently set top-level meta section content.
+     *
+     * @return array
+     */
+    public function getMeta()
+    {
+        return $this->meta ?: [];
+    }
+
+    /**
+     * Overwrites the meta section with data.
+     *
+     * @param array $data
+     * @return $this
+     */
+    public function setMeta(array $data)
+    {
+        $this->meta = $data;
+
+        return $this;
+    }
+
+    /**
+     * Sets a top-level meta section value for a key.
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @return $this
+     */
+    public function addMeta($key, $value)
+    {
+        if ( ! is_array($this->meta)) {
+            $this->meta = [];
+        }
+
+        $this->meta = array_set($this->meta, $key, $value);
+
+        return $this;
+    }
+
+    /**
+     * Removes a top-level meta section value by key.
+     *
+     * @param string $key
+     * @return $this
+     */
+    public function removeMetaKey($key)
+    {
+        if ( ! is_array($this->meta)) {
+            return $this;
+        }
+
+        array_forget($this->meta, $key);
 
         return $this;
     }

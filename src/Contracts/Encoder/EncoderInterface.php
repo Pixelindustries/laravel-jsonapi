@@ -68,6 +68,38 @@ interface EncoderInterface
      */
     public function removeLink($key);
 
+    /**
+     * Returns currently set top-level meta section content.
+     *
+     * @return array
+     */
+    public function getMeta();
+
+    /**
+     * Overwrites the meta section with data.
+     *
+     * @param array $data
+     * @return $this
+     */
+    public function setMeta(array $data);
+
+    /**
+     * Sets a top-level meta section value for a key.
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @return $this
+     */
+    public function addMeta($key, $value);
+
+    /**
+     * Removes a top-level meta section value by key.
+     *
+     * @param string $key
+     * @return $this
+     */
+    public function removeMetaKey($key);
+
 
     /**
      * Sets requested includes for transformation.
