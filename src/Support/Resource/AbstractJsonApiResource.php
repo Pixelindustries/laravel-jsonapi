@@ -46,6 +46,17 @@ class AbstractJsonApiResource implements ResourceInterface
     protected $includeReferences = true;
 
     /**
+     * Whether specific includes should not get type/id references.
+     *
+     * This is the complement for $includeReferences. It is ignored unless filled,
+     * and any excluded references take precendence over set inclusions (whether specific
+     * or all-inclusive).
+     *
+     * @var string[]
+     */
+    protected $excludeReferences = [];
+
+    /**
      * @var string[]
      */
     protected $availableFilters = [];
@@ -255,6 +266,10 @@ class AbstractJsonApiResource implements ResourceInterface
      */
     public function includeReferencesForRelation($name)
     {
+        if (count($this->excludeReferences) && array_intersect($this->excludeReferences, [ $name ])) {
+            return false;
+        }
+
         if (is_array($this->includeReferences)) {
             return (bool) count(array_intersect($this->includeReferences, [ $name ]));
         }
