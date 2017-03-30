@@ -84,7 +84,7 @@ to the JSON-API standard.
 JSON-API suggests passing in filter and page data using `GET` parameters, such as:
 
 ```
-{API UR}?filter[id]=13&page[number]=2
+{API URL}?filter[id]=13&page[number]=2
 ```
 
 This package offers tools for accessing this information in a standardized way:
