@@ -102,7 +102,7 @@ class ModelTransformer extends AbstractTransformer
         $data = [];
 
         foreach ($resource->availableAttributes() as $key) {
-            $data[ $key ] = $resource->attributeValue($key);
+            $data[ $this->normalizeJsonApiAttributeKey($key) ] = $resource->attributeValue($key);
         }
 
         return $data;
@@ -421,6 +421,17 @@ class ModelTransformer extends AbstractTransformer
     protected function isVariableRelation(Relation $relation)
     {
         return $relation instanceof Relations\MorphTo;
+    }
+
+    /**
+     * Normalizes a model attribute key to a JSON-API attribute key.
+     *
+     * @param string $key
+     * @return string
+     */
+    protected function normalizeJsonApiAttributeKey($key)
+    {
+        return snake_case($key, '-');
     }
 
     /**
