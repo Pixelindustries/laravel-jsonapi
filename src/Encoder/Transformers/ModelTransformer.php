@@ -271,6 +271,11 @@ class ModelTransformer extends AbstractTransformer
     protected function getRelatedReferenceData(ResourceInterface $resource, RelationData $relation)
     {
         if ( ! $relation->model) {
+            // Should be acceptable for morphTo, since it simply means that the FK is null
+            if ($relation->variable) {
+                return [];
+            }
+
             throw new UnexpectedValueException("Could not determine related model for related reference data lookup");
         }
 
