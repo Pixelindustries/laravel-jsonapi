@@ -6,11 +6,11 @@ if ( ! function_exists('jsonapi')) {
     /**
      * Returns JSON-API parser instance.
      *
-     * @return \Pixelindustries\JsonApi\Contracts\Support\Request\RequestParserInterface
+     * @return \Pixelindustries\JsonApi\Contracts\Support\Request\RequestQueryParserInterface
      */
     function jsonapi()
     {
-        return app(\Pixelindustries\JsonApi\Contracts\Support\Request\RequestParserInterface::class);
+        return app(\Pixelindustries\JsonApi\Contracts\Support\Request\RequestQueryParserInterface::class);
     }
 }
 

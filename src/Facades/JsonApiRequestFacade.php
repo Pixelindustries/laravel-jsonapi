@@ -2,13 +2,13 @@
 namespace Pixelindustries\JsonApi\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Pixelindustries\JsonApi\Contracts\Support\Request\RequestParserInterface;
+use Pixelindustries\JsonApi\Contracts\Support\Request\RequestQueryParserInterface;
 
 /**
  * Class JsonApiRequestFacade
  *
- * @see RequestParserInterface
- * @see \Pixelindustries\JsonApi\Support\Request\RequestParser
+ * @see RequestQueryParserInterface
+ * @see \Pixelindustries\JsonApi\Support\Request\RequestQueryParser
  */
 class JsonApiRequestFacade extends Facade
 {
@@ -18,7 +18,7 @@ class JsonApiRequestFacade extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return RequestParserInterface::class;
+        return RequestQueryParserInterface::class;
     }
 
 }

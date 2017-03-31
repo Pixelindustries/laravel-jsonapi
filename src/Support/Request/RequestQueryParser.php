@@ -2,9 +2,14 @@
 namespace Pixelindustries\JsonApi\Support\Request;
 
 use Illuminate\Http\Request;
-use Pixelindustries\JsonApi\Contracts\Support\Request\RequestParserInterface;
+use Pixelindustries\JsonApi\Contracts\Support\Request\RequestQueryParserInterface;
 
-class RequestParser implements RequestParserInterface
+/**
+ * Class RequestQueryParser
+ *
+ * Parses contextual data set in the query string (filters, includes, sorting, etc).
+ */
+class RequestQueryParser implements RequestQueryParserInterface
 {
     const DEFAULT_INCLUDE_SEPARATOR = ',';
     const DEFAULT_SORT_SEPARATOR    = ',';

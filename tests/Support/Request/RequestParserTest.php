@@ -20,7 +20,7 @@ class RequestParserTest extends TestCase
     {
         $this->filter = ['id' => 2];
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(['id' => 2], $parser->getFilter());
     }
@@ -32,7 +32,7 @@ class RequestParserTest extends TestCase
     {
         $this->filter = ['id' => 2];
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(2, $parser->getFilterValue('id'));
     }
@@ -44,7 +44,7 @@ class RequestParserTest extends TestCase
     {
         $this->page = ['id' => 2];
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(333, $parser->getFilterValue('test', 333));
     }
@@ -56,7 +56,7 @@ class RequestParserTest extends TestCase
     {
         $this->include = 'test,include.attribute';
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals('test,include.attribute', $parser->getRawIncludes());
     }
@@ -68,7 +68,7 @@ class RequestParserTest extends TestCase
     {
         $this->include = 'test,include.attribute';
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(['test', 'include.attribute'], $parser->getIncludes());
     }
@@ -80,7 +80,7 @@ class RequestParserTest extends TestCase
     {
         $this->page = ['number' => 2];
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(['number' => 2], $parser->getPageData());
     }
@@ -92,7 +92,7 @@ class RequestParserTest extends TestCase
     {
         $this->page = ['number' => 2];
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(2, $parser->getPageNumber());
     }
@@ -104,7 +104,7 @@ class RequestParserTest extends TestCase
     {
         $this->page = ['size' => 10];
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(10, $parser->getPageSize());
     }
@@ -116,7 +116,7 @@ class RequestParserTest extends TestCase
     {
         $this->page = ['offset' => 10];
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(10, $parser->getPageOffset());
     }
@@ -128,7 +128,7 @@ class RequestParserTest extends TestCase
     {
         $this->page = ['limit' => 20];
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(20, $parser->getPageLimit());
     }
@@ -140,7 +140,7 @@ class RequestParserTest extends TestCase
     {
         $this->page = ['cursor' => 15];
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(15, $parser->getPageCursor());
     }
@@ -152,7 +152,7 @@ class RequestParserTest extends TestCase
     {
         $this->sort = 'test,include|desc';
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals('test,include|desc', $parser->getRawSort());
     }
@@ -164,7 +164,7 @@ class RequestParserTest extends TestCase
     {
         $this->sort = 'test,include|desc';
 
-        $parser = new RequestParser($this->getSetUpRequest());
+        $parser = new RequestQueryParser($this->getSetUpRequest());
 
         static::assertEquals(['test', 'include|desc'], $parser->getSort());
     }

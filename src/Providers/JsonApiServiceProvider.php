@@ -6,14 +6,14 @@ use Pixelindustries\JsonApi\Contracts\Encoder\EncoderInterface;
 use Pixelindustries\JsonApi\Contracts\Encoder\TransformerFactoryInterface;
 use Pixelindustries\JsonApi\Contracts\Repositories\ResourceCollectorInterface;
 use Pixelindustries\JsonApi\Contracts\Repositories\ResourceRepositoryInterface;
-use Pixelindustries\JsonApi\Contracts\Support\Request\RequestParserInterface;
+use Pixelindustries\JsonApi\Contracts\Support\Request\RequestQueryParserInterface;
 use Pixelindustries\JsonApi\Contracts\Support\Type\TypeMakerInterface;
 use Pixelindustries\JsonApi\Encoder\Encoder;
 use Pixelindustries\JsonApi\Encoder\Factories\TransformerFactory;
 use Pixelindustries\JsonApi\Facades;
 use Pixelindustries\JsonApi\Repositories\ResourceCollector;
 use Pixelindustries\JsonApi\Repositories\ResourceRepository;
-use Pixelindustries\JsonApi\Support\Request\RequestParser;
+use Pixelindustries\JsonApi\Support\Request\RequestQueryParser;
 use Pixelindustries\JsonApi\Support\Type\TypeMaker;
 
 class JsonApiServiceProvider extends ServiceProvider
@@ -48,7 +48,7 @@ class JsonApiServiceProvider extends ServiceProvider
      */
     protected function registerInterfaces()
     {
-        $this->app->singleton(RequestParserInterface::class, RequestParser::class);
+        $this->app->singleton(RequestQueryParserInterface::class, RequestQueryParser::class);
         $this->app->singleton(TypeMakerInterface::class, TypeMaker::class);
         $this->app->singleton(ResourceRepositoryInterface::class, ResourceRepository::class);
         $this->app->singleton(ResourceCollectorInterface::class, ResourceCollector::class);

@@ -2,13 +2,13 @@
 namespace Pixelindustries\JsonApi\Http\Requests;
 
 use Illuminate\Http\Request;
-use Pixelindustries\JsonApi\Support\Request\RequestParser;
+use Pixelindustries\JsonApi\Support\Request\RequestQueryParser;
 
 class JsonApiRequest extends Request
 {
 
     /**
-     * @var RequestParser
+     * @var RequestQueryParser
      */
     protected $jsonApiParser;
 
@@ -19,11 +19,11 @@ class JsonApiRequest extends Request
     {
         parent::__construct();
 
-        $this->jsonApiParser = new RequestParser($this);
+        $this->jsonApiParser = new RequestQueryParser($this);
     }
 
     /**
-     * @return RequestParser
+     * @return RequestQueryParser
      */
     public function jsonApi()
     {

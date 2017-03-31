@@ -1,7 +1,7 @@
 <?php
 namespace Pixelindustries\JsonApi\Contracts\Support\Request;
 
-interface RequestParserInterface
+interface RequestQueryParserInterface
 {
 
     /**
