@@ -31,7 +31,9 @@ class ModelCollectionTransformer extends ModelTransformer
         }
 
         if ($models->isEmpty()) {
-            return [];
+            return [
+                Key::DATA => [],
+            ];
         }
 
         if ($this->isVariable) {
