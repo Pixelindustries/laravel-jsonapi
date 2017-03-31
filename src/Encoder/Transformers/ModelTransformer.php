@@ -252,20 +252,6 @@ class ModelTransformer extends AbstractTransformer
      */
     protected function getRelatedFullData(ResourceInterface $resource, RelationData $relation)
     {
-        if ($relation->relation instanceof Relations\MorphTo) {
-            throw new RuntimeException('Morph not yet implemented!');
-        }
-
-        if ( ! $relation->model) {
-            throw new UnexpectedValueException("RelationData model key must be set for retrieving references");
-        }
-
-        $relatedResource = $this->encoder->getResourceForModel($relation->model);
-
-        if ( ! $relatedResource) {
-            throw new RuntimeException("Could not determine resource for model '" . get_class($relation->model) . "'");
-        }
-
         $includeKey = $relation->key;
         $method     = $resource->getRelationMethodForInclude($includeKey);
 
@@ -284,12 +270,8 @@ class ModelTransformer extends AbstractTransformer
      */
     protected function getRelatedReferenceData(ResourceInterface $resource, RelationData $relation)
     {
-        if ($relation->relation instanceof Relations\MorphTo) {
-            throw new RuntimeException('Morph not yet implemented!');
-        }
-
         if ( ! $relation->model) {
-            throw new UnexpectedValueException("RelationData model key must be set for retrieving references");
+            throw new UnexpectedValueException("Could not determine related model for related reference data lookup");
         }
 
         $relatedResource = $this->encoder->getResourceForModel($relation->model);
@@ -299,7 +281,7 @@ class ModelTransformer extends AbstractTransformer
         }
 
         $includeKey = $relation->key;
-        $keyName    = $relation->model->getKeyName();
+        $keyName    = $relation->model->getQualifiedKeyName();
         $method     = $resource->getRelationMethodForInclude($includeKey);
 
         if ($resource->getModel()->relationLoaded($method)) {
@@ -388,13 +370,19 @@ class ModelTransformer extends AbstractTransformer
     {
         $relation = $resource->includeRelation($key);
         $variable = $this->isVariableRelation($relation);
+        $model    = $variable ? null : $relation->getRelated();
+
+        if ($relation instanceof Relations\MorphTo) {
+            $model = $relation->getMorphType();
+            $model = new $model;
+        }
 
         return new RelationData([
             'key'      => $key,
             'variable' => $variable,
             'singular' => $this->isSingularRelation($relation),
             'relation' => $relation,
-            'model'    => $variable ? null : $relation->getRelated(),
+            'model'    => $model,
         ]);
     }
 
