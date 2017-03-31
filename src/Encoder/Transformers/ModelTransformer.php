@@ -426,7 +426,7 @@ class ModelTransformer extends AbstractTransformer
      */
     protected function normalizeJsonApiAttributeKey($key)
     {
-        return snake_case($key, '-');
+        return str_replace('_', '-', snake_case($key, '-'));
     }
 
     /**
