@@ -2,15 +2,29 @@
 
 use Symfony\Component\HttpFoundation\AcceptHeader;
 
-if ( ! function_exists('jsonapi')) {
+if ( ! function_exists('jsonapi_request')) {
     /**
-     * Returns JSON-API parser instance.
+     * Returns JSON-API request instance.
      *
-     * @return \Pixelindustries\JsonApi\Contracts\Support\Request\RequestQueryParserInterface
+     * This may be used as `request()` would, but adds JSON-API related information.
+     *
+     * @return \Pixelindustries\JsonApi\Http\Requests\JsonApiRequest
      */
-    function jsonapi()
+    function jsonapi_request()
     {
-        return app(\Pixelindustries\JsonApi\Contracts\Support\Request\RequestQueryParserInterface::class);
+        return app(\Pixelindustries\JsonApi\Http\Requests\JsonApiRequest::class);
+    }
+}
+
+if ( ! function_exists('jsonapi_query')) {
+    /**
+     * Returns JSON-API request query parser.
+     *
+     * @return \Pixelindustries\JsonApi\Support\Request\RequestQueryParser
+     */
+    function jsonapi_query()
+    {
+        return app(\Pixelindustries\JsonApi\Support\Request\RequestQueryParser::class);
     }
 }
 
