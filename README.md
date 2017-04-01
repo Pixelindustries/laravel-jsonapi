@@ -81,6 +81,8 @@ to the JSON-API standard.
 
 ### Request Data
 
+#### Request Query String Data
+
 JSON-API suggests passing in filter and page data using `GET` parameters, such as:
 
 ```
@@ -89,19 +91,19 @@ JSON-API suggests passing in filter and page data using `GET` parameters, such a
 
 This package offers tools for accessing this information in a standardized way:
 
-Using the `jsonapi()` global helper function. 
+Using the `jsonapi_query()` global helper function. 
 This returns the singleton instance of `Pixelindustries\JsonApi\Support\Request\RequestParser`.
 
 ```php
 <?php
     // Get the full filter data associative array.
-    $filter = jsonapi()->getFilter();
+    $filter = jsonapi_query()->getFilter();
     
     // Get a specific filter key value, if it is present (with a default fallback).
-    $id = jsonapi()->getFilterValue('id', 0);
+    $id = jsonapi_query()->getFilterValue('id', 0);
     
     // Get the page number.
-    $page = jsonapi()->getPageNumber();
+    $page = jsonapi_query()->getPageNumber();
 ```
 
 You can ofcourse also instantiate the request parser yourself to access these methods:
@@ -109,15 +111,29 @@ You can ofcourse also instantiate the request parser yourself to access these me
 ```php
 <?php
     // Using the interface binding ...
-    $jsonapi = app(\Pixelindustries\JsonApi\Contracts\Support\Request\RequestParserInterface::class);
+    $jsonapi = app(\Pixelindustries\JsonApi\Contracts\Support\Request\RequestQueryParserInterface::class);
     
     // Or by instantiating it manually ...
-    $jsonapi = new \Pixelindustries\JsonApi\Support\Request\RequestParser(request());
+    $jsonapi = new \Pixelindustries\JsonApi\Support\Request\RequestQueryParser(request());
     
     // After this, the same methods are available
     $id = $jsonapi->getFilterValue('id');
 ```
 
+#### Request Body Data
+
+For `PUT` and `POST` requests with JSON-API formatted body content, a special FormRequest is provided to validate and access request body data (\Pixelindustries\JsonApi\Http\Requests\JsonApiRequest).
+
+This class may be extended and used as any FormRequest class in Laravel.
+
+There is also a global help function `jsonapi_request()`, that returns an instance of this class (and thus mimics Laravel's `request()`).
+
+```php
+<?php
+    // Get validated data for the current request
+    $jsonApiType = jsonapi_request()->getType();
+    $jsonApiId   = jsonapi_request()->getId();
+```
 
 ### Encoding
 
