@@ -165,10 +165,14 @@ class ModelTransformer extends AbstractTransformer
                     $related = $this->getRelatedFullData($resource, $relationData);
                     $this->addRelatedDataToEncoder($related, $relationData->singular);
 
-                    $data[ $key ][ Key::DATA ] = $this->getRelatedReferencesFromRelatedData(
-                        $related,
-                        $relationData->singular
-                    );
+                    if (empty(array_get($related, Key::DATA))) {
+                        $data[ $key ][ Key::DATA ] = array_get($related, Key::DATA);
+                    } else {
+                        $data[ $key ][ Key::DATA ] = $this->getRelatedReferencesFromRelatedData(
+                            $related,
+                            $relationData->singular
+                        );
+                    }
 
                 } else {
 
@@ -260,6 +264,12 @@ class ModelTransformer extends AbstractTransformer
         $transformer = $this->encoder->makeTransformer($related);
         $transformer->setParent($this->parent . '.' . $includeKey);
 
+        // For nullable singular relations, make sure we return data normalized under a data key
+        // The recursive transformer call cannot detect this, since it will only see a NULL value.
+        if (null === $related) {
+            return [ Key::DATA => null ];
+        }
+
         return $transformer->transform($related);
     }
 
@@ -273,7 +283,7 @@ class ModelTransformer extends AbstractTransformer
         if ( ! $relation->model) {
             // Should be acceptable for morphTo, since it simply means that the FK is null
             if ($relation->variable) {
-                return [];
+                return $relation->singular ? null : [];
             }
 
             throw new UnexpectedValueException("Could not determine related model for related reference data lookup");
@@ -295,7 +305,11 @@ class ModelTransformer extends AbstractTransformer
             $ids = $resource->includeRelation($includeKey)->pluck($keyName)->toArray();
         }
 
-        if ($relation->singular && count($ids)) {
+        if ($relation->singular) {
+            if ( ! count($ids)) {
+                return null;
+            }
+
             return [ 'type' => $relatedResource->type(), 'id' => head($ids) ];
         }
 
@@ -315,17 +329,21 @@ class ModelTransformer extends AbstractTransformer
      */
     protected function addRelatedDataToEncoder($data, $singular = true)
     {
-        if (empty($data)) {
+        if ( ! is_array($data)) {
             return;
         }
 
         if ($singular) {
-            $data = [ array_get($data, Key::DATA, []) ];
+            $data = [ array_get($data, Key::DATA) ];
         } else {
             $data = array_get($data, Key::DATA, []);
         }
 
         foreach ($data as $related) {
+            if ( ! is_array($related)) {
+                continue;
+            }
+
             $identifier = array_get($related, 'type') . ':' . array_get($related, 'id');
             $this->encoder->addIncludedData($related, $identifier);
         }
