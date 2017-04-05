@@ -1,8 +1,9 @@
 <?php
-namespace Pixelindustries\JsonApi\Support\Request;
+namespace Pixelindustries\JsonApi\Test\Support\Request;
 
 use Illuminate\Http\Request;
 use Mockery;
+use Pixelindustries\JsonApi\Support\Request\RequestQueryParser;
 use Pixelindustries\JsonApi\Test\TestCase;
 
 class RequestParserTest extends TestCase
