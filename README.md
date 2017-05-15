@@ -1,3 +1,8 @@
+
+*This package is abandoned!*
+
+Please use [https://github.com/czim/laravel-jsonapi](czim/laravel-jsonapi) instead.
+
 # JSON-API Base
 
 [![Software License][ico-license]](LICENSE.md)
