@@ -1,7 +1,7 @@
 
 *This package is abandoned!*
 
-Please use [https://github.com/czim/laravel-jsonapi](czim/laravel-jsonapi) instead.
+Please use [czim/laravel-jsonapi](https://github.com/czim/laravel-jsonapi) instead.
 
 # JSON-API Base
 
